@@ -1,27 +1,33 @@
+import Student from "./model/student.js";
 import DataService from "./services/data-service.js";
 
 const service = new DataService();
 
+function getStudents() {
+    const studentsPromise = service.getStudentsData()
+    studentsPromise.then(studentsData => render(studentsData))
+}
+
 function orderByName(){
-    const studentData = service.getStudentsByName()
-    reder(studentData);
+    const studentsPromise = service.getStudentsByName()
+    studentsPromise.then(studentsData => render(studentsData))
 }
 
 function orderByAge(){
-    const studentData = service.getStudentsByAge()
-    reder(studentData);
+    service.getStudentsByAge().then(studentData => render(studentData));
 }
 
-function shuffle(){
-    const studentData = service.getShuffledStudents()
-    reder(studentData);
+async function shuffle(){
+    const studentData =  await service.getShuffledStudents()
+    render(studentData);
 }
 
 window.orderByName = orderByName;
 window.orderByAge = orderByAge;
 window.shuffle = shuffle;
+window.getStudents = getStudents;
 
-function reder(studentData){
+function render(studentData){
     const container = document.getElementById('students-container');
 
     container.innerHTML = '';

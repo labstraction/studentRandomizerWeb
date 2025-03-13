@@ -5,112 +5,50 @@ export default class DataService {
 
     constructor() {}
 
-    getStudentsData(){
-        
-        const data = [
-            {
-                "name": "lorenzo",
-                "surname": "puppo",
-                "yob": 1995,
-                "nationality": "italy",
-                "gender": "m",
-                "marks": [
-                    8,
-                    9,
-                    10
-                ]
-            },
-            {
-                "name": "jan",
-                "surname": "stigliani",
-                "yob": 2000,
-                "nationality": "italy",
-                "gender": "m",
-                "marks": [
-                    7,
-                    7,
-                    8
-                ]
-            },
-            {
-                "name": "giovanni",
-                "surname": "sussarellu",
-                "yob": 1981,
-                "nationality": "italy",
-                "gender": "m",
-                "marks": [
-                    7,
-                    6,
-                    8
-                ]
-            },
-            {
-                "name": "sara",
-                "surname": "de prà",
-                "yob": 1989,
-                "nationality": "italy",
-                "gender": "fluid",
-                "marks": [
-                    9,
-                    6,
-                    8
-                ]
-            },
-            {
-                "name": "jeremias",
-                "surname": "cedeno",
-                "yob": 2003,
-                "nationality": "ecuador",
-                "gender": "m",
-                "marks": [
-                    6,
-                    10,
-                    7
-                ]
-            },
-            {
-                "name": "laura",
-                "surname": "mazza",
-                "yob": 1984,
-                "nationality": "italy",
-                "gender": "f",
-                "marks": [
-                    4,
-                    2,
-                    6
-                ]
-            },
-            {
-                "name": "eusebio",
-                "surname": "veizi",
-                "yob": 1993,
-                "nationality": "albanese",
-                "gender": "peanut",
-                "marks": [
-                    5,
-                    7,
-                    6
-                ]
-            },
-            {
-                "name": "hugo",
-                "surname": "martinez",
-                "yob": 1994,
-                "nationality": "elSalvador",
-                "gender": "f",
-                "marks": [
-                    10,
-                    10,
-                    8
-                ]
-            }
-        ];
+
+ 
+
+    // useResponse(response){
+    //     const jsonPromise = response.json();
+
+    //     jsonPromise.then((json) => console.log(json))
+
+    //     jsonPromise.catch((error) => console.log(error))
+       
+    // }
+
+    // handleError(response){
+    //     console.log('brutta storia', response);
+    // }
+
+    async getStudentsData(){
+
+        // const responsePromise = fetch("/assets/students.json");
+    
+        // responsePromise.then(this.useResponse)
+
+        // responsePromise.catch(this.handleError)
+
+        const devUrls = "/assets/students.json";
+        const prodUrl = "/studentRandomizerWeb/assets/students.json"
+
+        const studentsPromise = fetch(prodUrl)
+        .then(resp => resp.json())
+        .then(jsonData => {
+
+            const students = this.createStudentsFromRowData(jsonData);
+
+            console.log(students);
+            
+            return students;
+        })
+        .catch(error => console.log(error))
 
         // const orderdData = this.sortStudentData(data);
 
-        const students = this.createStudentsFromRowData(data)
-
-        return students;
+        
+        return studentsPromise;
+        
 
         // const richData = this.addAge(data)
 
@@ -119,27 +57,32 @@ export default class DataService {
 
 
     getStudentsByName(){
-        const students = this.getStudentsData();
+        
+        return this.getStudentsData().then( students => {
 
-        const studentsClone = students.slice();
+            const studentsClone = students.slice();
+            studentsClone.sort((s1, s2) => s1.compareByName(s2));
+            return studentsClone;
 
-        studentsClone.sort((s1, s2) => s1.compareByName(s2));
+        })
 
-        return studentsClone;
     }
 
     getStudentsByAge(){
-        const students = this.getStudentsData();
+        
+        return this.getStudentsData().then(students => {
+            const studentsClone = students.slice();
 
-        const studentsClone = students.slice();
+            studentsClone.sort((s1, s2) => s1.compareByAge(s2));
+    
+            return studentsClone;
+        });
 
-        studentsClone.sort((s1, s2) => s1.compareByAge(s2));
 
-        return studentsClone;
     }
 
-    getShuffledStudents(){
-        const students = this.getStudentsData();
+    async getShuffledStudents(){
+        const students = await this.getStudentsData();
 
         const studentsClone = students.slice();
 
